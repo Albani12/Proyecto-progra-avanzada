@@ -1,16 +1,16 @@
 import random
-class Ciudadano():
+import numpy as np
+class Ciudadano():  #Representa a cada individuo en la simulación
     def __init__(self, id, nombre, apellido, comunidad, familia, enfermedad, estado, gamma):
-        self.__id = id
-        self.__nombre = nombre
-        self.__apellido = apellido
-        self.__comunidad = comunidad
-        self.__familia = familia
+        self.__id = id 
+        self.__nombre = nombre 
+        self.__apellido = apellido 
+        self.__comunidad = comunidad 
+        self.__familia = familia 
         self.__enfermedad = enfermedad
         self.__estado = estado  #'S': Susceptible, 'I': Infectado, 'R': Recuperado
         self.__gamma = gamma
         self.__contador = 0
-        self.__familia = familia
 
     #Set y get para atributo privado de la clase
 
@@ -70,11 +70,15 @@ class Ciudadano():
         self.__estado = 'R'
         self.__contador = 0
 
+
     def paso(self, gamma): #Gamma es la tasa de recuperacion
         if self.__estado == 'I':
             self.__contador += 1
-            if random.random() < self.__gamma:  #probabilidad gamma de que el individuo se recupere
+            if np.random.random() < self.__gamma:  #probabilidad gamma de que el individuo se recupere
                 self.recuperar()
-#sugerencia del profe: usar random de numpy
+            #sugerencia del profe: usar random de numpy
+
+    def representacion(self):
+        return f"{self.get_nombre} {self.get_apellido}: {self.get_estado}"
     
     

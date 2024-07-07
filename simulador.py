@@ -4,6 +4,7 @@ class Simulador:
     def __init__(self, comunidad, historial, ciudadanos, familias):
         self.__comunidad = None
         self.__historial = []
+        self.__total_infectados_por_dia = []
 
     def set_comunidad(self, comunidad):
         self.comunidad = comunidad
@@ -16,24 +17,35 @@ class Simulador:
 
     def get_historial(self):
         return self.__historial
+    
+    def set_total_infectados_por_dia(self, total_infectados_por_dia):
+        self.total_infectados_por_dia = total_infectados_por_dia
+    
+    def get_total_infectados_por_dia(self):
+        return self.__total_infectados_por_dia
 
     def inicio_simulacion(self, pasos):
         for paso in range(pasos):
-            self.comunidad.simular_paso()
+            self.comunidad.simulacion_paso()
             self.guardar_estado(paso)
            #Paso, indica en que paso de la simulacion se encuentre 
             
     def guardar_estado(self, paso):
         estado = []
-        for ciudadano in self.comunidad.ciudadanos:
+        total_infectados = 0
+        for ciudadano in self.__comunidad.get_ciudadanos():
             estado.append({
                 'id': ciudadano.get_id(),
                 'nombre': ciudadano.get_nombre(),
                 'apellido': ciudadano.get_apellido(),
-                'estado': 'Sano' if ciudadano.get_estado else 'Enfermo',
+                'estado': ciudadano.get_estado(),
                 'contador': ciudadano.get_contador()
             })
-        self.historial.append(estado)
+            if ciudadano.get_estado() == 'I':
+                total_infectados += 1
+        
+        self.__historial.append(estado)
+        self.__total_infectados_por_dia.append(total_infectados)
         self.guardar_csv(paso, estado)
 
     def guardar_csv(self, paso, estado):
