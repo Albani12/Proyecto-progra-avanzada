@@ -44,8 +44,6 @@ class Comunidad():
 
         print("Archivo CSV generado con exito")
 
-
-
     def simular_paso():
         pass
         #avance en el tiempo, por dia

@@ -8,6 +8,7 @@ class Ciudadano():
         self.__familia = familia
         self.__enfermedad = enfermedad
         self.__estado = estado  #'S': Susceptible, 'I': Infectado, 'R': Recuperado
+        self.__gamma = gamma
         self.__contador = 0
         self.__familia = familia
 
@@ -61,5 +62,19 @@ class Ciudadano():
     def set_contador(self, contador):
         self.__contador = contador
     
+    def infectar(self):
+        self.__estado = 'I'
+        self.__contador = 0
+
+    def recuperar(self):
+        self.__estado = 'R'
+        self.__contador = 0
+
+    def paso(self, gamma): #Gamma es la tasa de recuperacion
+        if self.__estado == 'I':
+            self.__contador += 1
+            if random.random() < self.__gamma:  #probabilidad gamma de que el individuo se recupere
+                self.recuperar()
+#sugerencia del profe: usar random de numpy
     
     
