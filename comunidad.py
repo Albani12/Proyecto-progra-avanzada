@@ -44,6 +44,22 @@ class Comunidad():
 
         print("Archivo CSV generado con exito")
 
+    def asignar_familias(self): #Divide a los ciudadanos en 50 familias de tamaño aleatorio (entre 2 y 5 personas)
+        familias = []
+        for i in range(50):  #50 familias
+            familia = random.sample(self.get_num_ciudadanos, k=random.randint(2, 5))  #Familias de 2 a 5 personas
+            for ciudadano in familia: 
+                ciudadano.familia = i  #Asignar un identificador de familia a cada ciudadano
+            familias.append(familia)
+
+    #infectar muestra aleatoria de ciudadanos
+    def infectar_familia(self, familia):
+        for ciudadano in familia:
+            if random.random() <self.enfermedad.get_infeccion_probable():
+                ciudadano.infectar(self.get_enfermedad)
+            #Compara el número aleatorio generado con la probabilidad de infección.
+            #cambiar random.random
+
     def simular_paso():
         pass
         #avance en el tiempo, por dia
