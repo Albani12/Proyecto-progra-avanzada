@@ -79,14 +79,20 @@ class VentanaGtk(Gtk.ApplicationWindow):
 
     def actualizar_ventana(self):
         self.label.set_text(f"Día {self.paso_actual}")
+
+        total_infectados_list = self.simulador.get_total_infectados_por_dia()
+        if self.paso_actual < len(total_infectados_list):
+            total_infectados = total_infectados_list[self.paso_actual]
+            self.infectados_label.set_text(f"Total de Infectados: {total_infectados}")
+        else: 
+            self.infectados_label.set_text(f"Total de Infectados: 0")
+
+    # Actualizar el estado de los ciudadanos en el TextView
         estado = self.simulador.obtener_estado(self.paso_actual)
         buffer = self.textview.get_buffer()
         buffer.set_text("")
         for ciudadano in estado:
             buffer.insert(buffer.get_end_iter(), f"{ciudadano['nombre']} {ciudadano['apellido']}: {ciudadano['estado']}\n")
-
-        total_infectados = self.simulador.get_total_infectados_por_dia()[self.paso_actual]
-        self.infectados_label.set_text(f"Total de Infectados: {total_infectados}")
 
 def main(args):
     app = Gtk.Application(application_id="com.example.myapp")
