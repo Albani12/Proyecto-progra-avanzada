@@ -10,9 +10,8 @@ class VentanaGtk(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_title("Expansion de Enfermedad Altamente contagiosa")
-        self.set_default_size(400, 300)
+        self.set_default_size(600, 400)
 
-        self.iniciar_simulacion()
         self.paso_actual = 0
 
         # Crea un contenedor vertical
@@ -42,6 +41,9 @@ class VentanaGtk(Gtk.ApplicationWindow):
         self.about_btn = Gtk.Button(label="Acerca de")
         self.about_btn.connect("clicked", self.show_about_dialog)
         vbox.append(self.about_btn)
+
+        self.iniciar_simulacion()  #Inicializar la simulacion
+
         
     def show_about_dialog(self, action):
         about = Gtk.AboutDialog()
@@ -66,28 +68,32 @@ class VentanaGtk(Gtk.ApplicationWindow):
 
         comunidad = Comunidad(num_ciudadanos, promedio_conexion_fisica, enfermedad, num_infectados, probabilidad_conexion_fisica, [], 0.5)
         self.simulador = Simulador(comunidad, [], [], [])
+        print("Simulación inicializada.")  #Mensaje de depuracion
 
     def on_avanzar_clicked(self, widget):
+        print("Botón Avanzar presionado.")  #Mensaje de depuración
         self.simulador.inicio_simulacion(1)
-        self.paso_actual += 1
+        self.paso_actual = len(self.simulador.get_historial()) - 1
         self.actualizar_ventana()
+
 
     def on_retroceder_clicked(self, widget):
         if self.paso_actual > 0:
+            print("Botón Retroceder presionado.")  #Mensaje de depuración
             self.paso_actual -= 1
             self.actualizar_ventana()
 
-    def actualizar_ventana(self):
+def actualizar_ventana(self):
         self.label.set_text(f"Día {self.paso_actual}")
 
         total_infectados_list = self.simulador.get_total_infectados_por_dia()
         if self.paso_actual < len(total_infectados_list):
             total_infectados = total_infectados_list[self.paso_actual]
             self.infectados_label.set_text(f"Total de Infectados: {total_infectados}")
-        else: 
+        else:
             self.infectados_label.set_text(f"Total de Infectados: 0")
 
-    # Actualizar el estado de los ciudadanos en el TextView
+        # Actualizar el estado de los ciudadanos en el TextView
         estado = self.simulador.obtener_estado(self.paso_actual)
         buffer = self.textview.get_buffer()
         buffer.set_text("")
@@ -100,9 +106,4 @@ def main(args):
     return app.run(args)
 
 if __name__ == "__main__":
-    covid = Enfermedad(infeccion_probable=0.3, promedio_pasos=15)
-    talca = Comunidad(num_ciudadanos=1000, promedio_conexion_fisica=8, enfermedad=covid, num_infectados=10, probabilidad_conexion_fisica=0.8, ciudadanos=[], gamma=0.5)    
-    sim = Simulador(talca, [], [], [])
-    sim.set_comunidad(comunidad=talca)
-    sim.inicio_simulacion(pasos=30)
     sys.exit(main(sys.argv))

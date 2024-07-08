@@ -52,7 +52,6 @@ class Comunidad():
     def set_ciudadanos(self, ciudadanos):
         self.__ciudadanos = ciudadanos
 
-    
     def crear_ciudadanos(self):
         nombres = ["Juan", "Maria", "Pedro", "Ana", "Luis", "Carla"] 
         apellidos = ["Perez", "Gomez", "Rodriguez", "Fernandez", "Martinez"]

@@ -63,8 +63,3 @@ class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el
     def tiempo_recuperacion(self): 
         return int(np.random.gamma(self.__promedio_pasos, 1)) 
 
-    
-
-    
-
-
