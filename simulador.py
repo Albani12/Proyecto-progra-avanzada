@@ -2,33 +2,32 @@ import pandas as pd
 
 class Simulador:
     def __init__(self, comunidad, historial, ciudadanos, familias):
-        self.__comunidad = None
+        self.__comunidad = comunidad
         self.__historial = []
         self.__total_infectados_por_dia = []
 
     def set_comunidad(self, comunidad):
-        self.comunidad = comunidad
+        self.__comunidad = comunidad
 
     def get_comunidad(self):
         return self.__comunidad
     
     def set_historial(self, historial):
-        self.historial = historial
+        self.__historial = historial
 
     def get_historial(self):
         return self.__historial
     
     def set_total_infectados_por_dia(self, total_infectados_por_dia):
-        self.total_infectados_por_dia = total_infectados_por_dia
+        self.__total_infectados_por_dia = total_infectados_por_dia
     
     def get_total_infectados_por_dia(self):
         return self.__total_infectados_por_dia
 
     def inicio_simulacion(self, pasos):
         for paso in range(pasos):
-            self.comunidad.simulacion_paso()
+            self.__comunidad.simulacion_paso()
             self.guardar_estado(paso)
-           #Paso, indica en que paso de la simulacion se encuentre 
             
     def guardar_estado(self, paso):
         estado = []
@@ -53,8 +52,6 @@ class Simulador:
         df.to_csv(f'estado_paso_{paso}.csv', index=False)
 
     def obtener_estado(self, paso):
-        if 0 <= paso < len(self.historial):
-            return self.historial[paso]
+        if 0 <= paso < len(self.__historial):
+            return self.__historial[paso]
         return []
-    
-    

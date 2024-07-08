@@ -70,6 +70,11 @@ class Ciudadano():  #Representa a cada individuo en la simulación
         self.__estado = 'R'
         self.__contador = 0
 
+    def get_gamma(self):
+        return self.__gamma
+
+    def set_gamma(self, gamma):
+        self.__gamma = gamma
 
     def paso(self, gamma): #Gamma es la tasa de recuperacion
         if self.__estado == 'I':

@@ -9,7 +9,7 @@ class Comunidad():
         self.__enfermedad = enfermedad 
         self.__num_infectados = num_infectados 
         self.__probabilidad_conexion_fisica = probabilidad_conexion_fisica
-        self.__ciudadanos = []
+        self.__ciudadanos = ciudadanos
         
 
     #Set y get para cada atributo privado de la clase
@@ -101,8 +101,13 @@ class Comunidad():
     def tiempo_recuperacion(self):
         return int(np.random.gamma(self.get_promedio_pasos, 1))
 
-    #def contagiar(self): #teoricamente debe ser un contagio mas intecional
-        #return np.random.gamma(2, 0.5) < self.get_infeccion_probable
+
+    def contagiar(self):
+        for ciudadano in self.__ciudadanos:
+            if ciudadano.get_estado() == 'I':
+                for otro in self.__ciudadanos:
+                    if ciudadano != otro and np.random.random() < self.__enfermedad.get_infeccion_probable():
+                        otro.infectar()
 
     def simulacion_paso(self):
         self.contagiar()

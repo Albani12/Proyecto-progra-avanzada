@@ -11,6 +11,7 @@ class VentanaGtk(Gtk.ApplicationWindow):
         super().__init__(*args, **kwargs)
         self.set_title("Expansion de Enfermedad Altamente contagiosa")
         self.set_default_size(400, 300)
+        self.set_show_menubar(False) 
 
         self.simulador = None
         self.paso_actual = 0
@@ -38,6 +39,22 @@ class VentanaGtk(Gtk.ApplicationWindow):
 
         self.infectados_label = Gtk.Label(label="Total de Infectados: 0")
         vbox.append(self.infectados_label)
+
+        self.about_btn = Gtk.Button(label="Acerca de")
+        self.about_btn.connect("clicked", self.show_about_dialog)
+        vbox.append(self.about_btn)
+        
+    def show_about_dialog(self, action):
+        about = Gtk.AboutDialog()
+        about.set_transient_for(self)
+        about.set_modal(self)
+        about.set_program_name("Simulacion de Enfermedad")
+        about.set_authors(["Ing. Albani Medina"])  #Créditos con nombre
+        about.set_version("1.0")
+        about.set_copyright("Ing. Albani Medina 2024")
+        about.set_comments("Simulación de expansión de enfermedad altamente contagiosa")
+        about.set_visible(True)
+
 
         # Inicializar comunidad y simulador
         self.iniciar_simulacion()
@@ -69,7 +86,7 @@ class VentanaGtk(Gtk.ApplicationWindow):
         buffer.set_text("")
         for ciudadano in estado:
             buffer.insert(buffer.get_end_iter(), f"{ciudadano['nombre']} {ciudadano['apellido']}: {ciudadano['estado']}\n")
-            
+
         total_infectados = self.simulador.get_total_infectados_por_dia()[self.paso_actual]
         self.infectados_label.set_text(f"Total de Infectados: {total_infectados}")
 
