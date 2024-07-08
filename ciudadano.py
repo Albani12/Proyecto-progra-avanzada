@@ -1,5 +1,6 @@
+import numpy as np 
 import random
-import numpy as np
+
 class Ciudadano():  #Representa a cada individuo en la simulación
     def __init__(self, id, nombre, apellido, comunidad, familia, enfermedad, estado, gamma):
         self.__id = id 

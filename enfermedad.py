@@ -1,5 +1,6 @@
-import numpy as np
+import numpy as np 
 import random
+from ciudadano import Ciudadano
 class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el tiempo promedio de recuperación
     def __init__(self, infeccion_probable, promedio_pasos, gamma=0.5,enfermo=False, contador=0):
 
@@ -47,24 +48,23 @@ class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el
         self.__gamma = gamma
 
 
+    def infectar_familia(self, familia): 
+        for ciudadano in familia: 
+            if np.random.random() < self.__infeccion_probable: 
+                ciudadano.infectar() 
 
+    def contagiar(self, ciudadanos): 
+        for ciudadano in ciudadanos: 
+            if ciudadano.get_estado() == 'I': 
+                for otro in ciudadanos: 
+                    if ciudadano != otro and np.random.random() < self.__infeccion_probable: 
+                        otro.infectar_familia() 
 
-
-
-
-    #infectar muestra aleatoria de ciudadanos
-    def infectar_familia(self, familia):
-        for ciudadano in familia:
-            if random.random() <self.enfermedad.get_infeccion_probable():
-                ciudadano.infectar(self.get_enfermedad)
-            #Compara el número aleatorio generado con la probabilidad de infección.
-            #cambiar random.random
-
-    def conexiones_aleatorias(self):
-        for ciudadano in self.get_num_ciudadanos:
-            for otro in self.get_num_ciudadanos:
-                if ciudadano != otro and random.random() < self.get_promedio_conexion_fisica:
-                    ciudadano.conectar(otro)
+    def tiempo_recuperacion(self): 
+        return int(np.random.gamma(self.__promedio_pasos, 1)) 
 
     
+
+    
+
 

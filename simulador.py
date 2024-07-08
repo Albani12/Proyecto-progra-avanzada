@@ -1,3 +1,4 @@
+
 import pandas as pd
 
 class Simulador:
@@ -28,6 +29,7 @@ class Simulador:
         for paso in range(pasos):
             self.__comunidad.simulacion_paso()
             self.guardar_estado(paso)
+            #print("Simulación finalizada.") #Para verficar que pasa pero todo sigue igual :(
             
     def guardar_estado(self, paso):
         estado = []
@@ -54,4 +56,9 @@ class Simulador:
     def obtener_estado(self, paso):
         if 0 <= paso < len(self.__historial):
             return self.__historial[paso]
-        return []
+        else:
+            return []
+        
+    def get_total_infectados_por_dia(self): 
+       return self.__total_infectados_por_dia 
+

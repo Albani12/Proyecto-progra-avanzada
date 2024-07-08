@@ -100,5 +100,3 @@ if __name__ == "__main__":
     sim.set_comunidad(comunidad=talca)
     sim.inicio_simulacion(pasos=30)
     sys.exit(main(sys.argv))
-
-
