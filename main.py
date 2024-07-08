@@ -11,9 +11,8 @@ class VentanaGtk(Gtk.ApplicationWindow):
         super().__init__(*args, **kwargs)
         self.set_title("Expansion de Enfermedad Altamente contagiosa")
         self.set_default_size(400, 300)
-        self.set_show_menubar(False) 
 
-        self.simulador = None
+        self.iniciar_simulacion()
         self.paso_actual = 0
 
         # Crea un contenedor vertical
@@ -56,8 +55,7 @@ class VentanaGtk(Gtk.ApplicationWindow):
         about.set_visible(True)
 
 
-        # Inicializar comunidad y simulador
-        self.iniciar_simulacion()
+    # Inicializar comunidad y simulador
 
     def iniciar_simulacion(self):
         num_ciudadanos = 1000
