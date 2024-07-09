@@ -52,7 +52,14 @@ class Comunidad():
     def set_ciudadanos(self, ciudadanos):
         self.__ciudadanos = ciudadanos
 
+    def get_gamma(self):
+        return self.__gamma
+
+    def set_gamma(self, gamma):
+        self.__gamma = gamma
+
     def crear_ciudadanos(self):
+        
         nombres = ["Juan", "Maria", "Pedro", "Ana", "Luis", "Carla"] 
         apellidos = ["Perez", "Gomez", "Rodriguez", "Fernandez", "Martinez"]
         
@@ -77,75 +84,69 @@ class Comunidad():
 
         return ciudadanos
 
-
-    def asignar_familias(self): ##Divide a los ciudadanos en 50 familias de tamaño aleatorio (entre 2 y 5 personas)
+    def asignar_familias(self): #Divide a los ciudadanos en 50 familias de tamaño aleatorio (entre 2 y 5 personas)
         familias = []
         num_ciudadanos = len(self.__ciudadanos)
         ciudadanos_sin_familia = self.__ciudadanos[:]
         
-        for i in range(50):
-            tamaño_familia = np.random.randint(2, 5)
+        for i in range(num_ciudadanos // 5):  #Crear aproximadamente 200 familias
+            tamaño_familia = np.random.randint(2, 5)  #Familias de 2 a 5 personas
             if len(ciudadanos_sin_familia) < tamaño_familia:
                 tamaño_familia = len(ciudadanos_sin_familia)
                 
-            familia = np.random.choice(ciudadanos_sin_familia, size=tamaño_familia, replace=False).tolist()
+            familia = np.random.choice(ciudadanos_sin_familia, tamaño_familia)
             for ciudadano in familia:
-                ciudadano.set_familia(i)   #Asignar un identificador de familia a cada ciudadano
+                ciudadano.set_familia(i)  #Asignar un identificador de familia a cada ciudadano
                 ciudadanos_sin_familia.remove(ciudadano)
                 
             familias.append(familia)
 
         return familias
+    
 
-    def inicializar_infectados(self):
-        infectados = np.random.choice(self.__ciudadanos, size=self.__num_infectados, replace=False)
+    def inicializar_infectados(self):  #numero inicial de ciudadanos infectados en la comunidad
+        infectados = random.sample(self.__ciudadanos, self.__num_infectados)
         for ciudadano in infectados:
             ciudadano.infectar()
 
-    def conexiones_aleatorias(self):
+
+    def interaccion_aleatoria(self): #Simula interacciones aleatorias entre los ciudadanos basadas en la probabilidad de conexión física,
+                                    #si un ciudadano infectado interactúa con uno susceptible, este se contagia
         for ciudadano in self.__ciudadanos:
-            if ciudadano.get_estado() != 'D':  # No interactuar si está muerto
-                for otro in np.random.choice(self.__ciudadanos, size=self.__num_ciudadanos, replace=True):
-                    if ciudadano != otro and np.random.random() < self.__promedio_conexion_fisica:
-                        self.interactuar_persona(ciudadano, otro)
+            if np.random.random() < self.__probabilidad_conexion_fisica:
+                posibles_interactores = [otro for otro in self.__ciudadanos if otro != ciudadano]
+                interactor = np.random.choice(posibles_interactores)
+                if ciudadano.get_estado() == 'I' and interactor.get_estado() == 'S':
+                    if np.random.random() < ciudadano.get_enfermedad().get_infeccion_probable():
+                        interactor.infectar()
 
-    def interactuar_persona(self, persona1, persona2):
-        if persona1.get_estado() == 'I' and persona2.get_estado() == 'S':
-            if np.random.random() < persona1.get_enfermedad().get_infeccion_probable():
-                persona2.infectar()
-
-    def recuperar_infectados(self):
-        for ciudadano in self.__ciudadanos:
-            if ciudadano.get_estado() == 'I':
-                if np.random.random() < ciudadano.get_enfermedad().get_probabilidad_recuperacion():
-                    ciudadano.recuperar()
-                elif np.random.random() < ciudadano.get_enfermedad().get_probabilidad_muerte():
-                    self.eliminar_ciudadano(ciudadano)
-
-
-    def contagiar(self):
-        for ciudadano in self.__ciudadanos:
-            if ciudadano.get_estado() == 'I':
-                for otro in self.__ciudadanos:
-                    if ciudadano != otro and np.random.random() < ciudadano.get_enfermedad().get_infeccion_probable():
-                        otro.infectar()
-
+    def interaccion_familiar(self):   #interacciones dentro de las familias, donde los miembros 
+                                      #pueden infectarse si un miembro infectado está presente
+        for familia in self.__familias:
+            for i in range(len(familia)):
+                for j in range(i + 1, len(familia)):
+                    persona1 = familia[i]
+                    persona2 = familia[j]
+                    if persona1.get_estado() == 'I' and persona2.get_estado() == 'S':
+                        if np.random.random() < persona1.get_enfermedad().get_infeccion_probable():
+                            persona2.infectar()
+    
     def simulacion_paso(self):
-        self.conexiones_aleatorias()
-        self.contagiar()
-        self.recuperar_infectados()
-
-    def tiempo_recuperacion(self):
-         # Utilizando una distribución gamma para el tiempo de recuperación
-         return int(np.random.gamma(self.__enfermedad.get_promedio_pasos(), 1))
+        self.interaccion_aleatoria()
+        self.interaccion_familiar()
+        for ciudadano in self.__ciudadanos:
+            ciudadano.actualizar_estado()
 
     def resultados(self):
-        estados = {'S': 0, 'I': 0, 'R': 0, 'D': 0}
+        estados = {'S': 0, 'I': 0, 'R': 0, 'M': 0}
         for ciudadano in self.__ciudadanos:
             estados[ciudadano.get_estado()] += 1
         return estados
 
-        
+    def tiempo_recuperacion(self):
+        #Utilizando una distribucion gamma para el tiempo de recuperación
+        return int(np.random.gamma(self.__enfermedad.get_promedio_pasos(), 1))
+
 
 #Al inicio, un número inicial de ciudadanos se infectan 
 #En cada paso de la simulación, los ciudadanos se conectan aleatoriamente y se contagian basados en la probabilidad de infección.
