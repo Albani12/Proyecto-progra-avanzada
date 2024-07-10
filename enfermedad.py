@@ -1,16 +1,16 @@
 import numpy as np 
 import random
-from ciudadano import Ciudadano
 
 class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el tiempo promedio de recuperación
-    def __init__(self, infeccion_probable, promedio_pasos, probabilidad_muerte, probabilidad_recuperacion, enfermo=False, contador=0):
+    def __init__(self, infeccion_probable, promedio_pasos, probabilidad_muerte, probabilidad_recuperacion, enfermo=False):
 
         self.__infeccion_probable = infeccion_probable
         self.__promedio_pasos = promedio_pasos
         self.__enfermo = enfermo
-        self.__contador = contador
         self.__probabilidad_recuperacion = probabilidad_recuperacion
         self.__probabilidad_muerte = probabilidad_muerte
+        self.__contador = 0
+
     #Set y get para cada uno de los atributos privados de la clase
 
     def get_infeccion_probable(self):
@@ -37,12 +37,6 @@ class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el
     def set_contador(self, contador):
         self.__contador = contador
 
-    def get_infeccion_probable(self):
-        return self.__infeccion_probable
-    
-    def set_infeccion_probable(self, infeccion_probable):
-        self.__infeccion_probable= infeccion_probable
-
     def get_probabilidad_recuperacion(self):
         return self.__probabilidad_recuperacion
     
@@ -60,7 +54,7 @@ class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el
         #Infecta una familia completa con la probabilidad de infección de la enfermedad
         for ciudadano in familia:
             if np.random.random() < self.__infeccion_probable:
-                ciudadano.infectar()
+                ciudadano.infectar(self.get_enfermedad())
 
     def contagiar(self, ciudadanos): #Para los contactos aleatorios
         #Método para contagiar a otros ciudadanos en base a la probabilidad de infección
@@ -68,7 +62,7 @@ class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el
             if ciudadano.get_estado() == 'I':
                 for otro in ciudadanos:
                     if ciudadano != otro and np.random.random() < self.__infeccion_probable:
-                        otro.infectar()
+                        otro.infectar(self.get_enfermedad())
 
     def probabilidad_infeccion(self):
         #Devuelve la probabilidad de infección de la enfermedad
@@ -80,7 +74,9 @@ class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el
     
     def tiempo_recuperacion(self):
         # Devuelve el tiempo de recuperación basado en una distribución normal
-        return int(np.random.normal(self.__promedio_pasos, 1))
+        tiempo_recuperacion = int(np.random.normal(self.__promedio_pasos, 1))
+        self.__contador += tiempo_recuperacion  # Actualiza el contador con el tiempo de recuperación
+        return tiempo_recuperacion
 
     def probabilidad_muerte(self):
         # Devuelve la probabilidad de muerte de la enfermedad

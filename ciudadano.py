@@ -1,6 +1,5 @@
 import numpy as np 
 import random
-from enfermedad import Enfermedad
 
 class Ciudadano():  #Representa a cada individuo en la simulación
     def __init__(self, id, nombre, apellido, comunidad, familia, enfermedad, estado, gamma=0.5):
@@ -69,10 +68,11 @@ class Ciudadano():  #Representa a cada individuo en la simulación
 
     def set_gamma(self, gamma):
         self.__gamma = gamma
-    
-    def infectar(self):
+
+    def infectar(self, enfermedad):
         self.__estado = 'I'
         self.__contador_pasos = 0
+        self.set_enfermedad(enfermedad)
 
     def recuperar(self):
         self.__estado = 'R'
@@ -82,26 +82,26 @@ class Ciudadano():  #Representa a cada individuo en la simulación
         if self.__estado == 'I':
             self.__estado = 'M'  # Indicar estado de muerte
 
-    def paso(self):
+    def paso(self):    #para seguir el progreso de la infeccion
         if self.__estado == 'I':
             self.__contador_pasos += 1
-            if np.random.normal() < self.__enfermedad.get_gamma():   #probabilidad gamma de que el individuo se recupere
+            if np.random.normal() < self.get_enfermedad().get_gamma():   #probabilidad gamma de que el individuo se recupere
                 self.recuperar()
-            elif np.random.normal() < self.__enfermedad.get_probabilidad_muerte():
+            elif np.random.normal() < self.get_enfermedad().get_probabilidad_muerte():
                 self.morir()
 
     def actualizar_estado(self):
         if self.__estado == 'I':
             self.__contador_pasos += 1
-            if self.__contador_pasos >= self.__enfermedad.tiempo_recuperacion():
-                if np.random.normal() < self.__enfermedad.get_probabilidad_recuperacion():
+            if self.__contador_pasos >= self.get_enfermedad().tiempo_recuperacion():
+                if np.random.normal() < self.get_enfermedad().get_probabilidad_recuperacion():
                     self.recuperar()
-                elif np.random.normal() < self.__enfermedad.get_probabilidad_muerte():
+                elif np.random.normal() < self.get_enfermedad().get_probabilidad_muerte():
                     self.morir()
-            else:
-                for otro in self.__familia:
-                    if otro.get_estado() == 'S' and np.random.normal() < self.__enfermedad.get_infeccion_probable():
-                        otro.infectar()
+            # else:
+            #     for otro in self.__familia:
+            #         if otro.get_estado() == 'S' and np.random.normal() < self.get_enfermedad().get_infeccion_probable():
+            #             otro.infectar(self.get_enfermedad())
     #sugerencia del profe: usar random de numpy
 
     def representacion(self):
