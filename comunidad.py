@@ -14,6 +14,7 @@ class Comunidad():
         self.__ciudadanos = []
         self.__gamma = gamma
         self.__familias = []
+        self.__subcomunidades = []
         
     #Set y get para cada atributo privado de la clase
     def get_num_ciudadanos(self):
@@ -54,6 +55,12 @@ class Comunidad():
 
     def set_familias(self, familia):
         self.__familias.append(familia)
+
+    def set_subcomunidades(self, subcomunidades):
+        self.__subcomunidades = subcomunidades
+    
+    def get_subcomunidades(self):
+        return self.__subcomunidades
 
     def get_gamma(self):
         return self.__gamma
@@ -101,11 +108,24 @@ class Comunidad():
             for ciudadano in familia:
                 ciudadano.set_familia(i)  #Asigna un identificador de familia a cada ciudadano
                 #ciudadanos_sin_familia.remove(ciudadano)
-                
             self.set_familias(familia)
 
         return familias
     
+    def asignar_subcomunidades(self, promedio_personas_por_grupo):
+        ciudadanos = self.__ciudadanos
+        num_ciudadanos = len(ciudadanos)
+        num_grupos = num_ciudadanos // promedio_personas_por_grupo
+        subcomunidades = [[] for _ in range(num_grupos)]
+
+        random.shuffle(ciudadanos)
+
+        for i, ciudadano in enumerate(ciudadanos):
+            grupo_index = i % num_grupos
+            subcomunidades[grupo_index].append(ciudadano)
+
+        self.__subcomunidades = subcomunidades
+
     #numero inicial de ciudadanos infectados en la comunidad
     def inicializar_infectados(self):
         num_infectados = min(self.__num_infectados, len(self.__ciudadanos))
@@ -113,7 +133,6 @@ class Comunidad():
         for ciudadano in infectados:
             ciudadano.infectar(self.get_enfermedad())
         print(f"{num_infectados} ciudadanos infectados inicialmente.")  # Mensaje de depuración
-
 
 
     def interaccion_aleatoria(self): #Simula interacciones aleatorias entre los ciudadanos basadas en la probabilidad de conexión física,
@@ -140,15 +159,16 @@ class Comunidad():
     def simulacion_paso(self):
         self.interaccion_aleatoria()
         self.interaccion_familiar()
-        for ciudadano in self.__ciudadanos:
-            ciudadano.actualizar_estado()
-            for ciudadano in self.__ciudadanos:
+        for subcomunidad in self.get_subcomunidades():
+            for ciudadano in subcomunidad:
                 if ciudadano.get_estado() == 'I':
                     for otro_ciudadano in random.sample(self.__ciudadanos, self.__promedio_conexion_fisica):
-                        if otro_ciudadano.get_estado() == 'S':
-                            if random.random() < self.__enfermedad.get_infeccion_probable():
-                                otro_ciudadano.infectar(self.get_enfermedad())
-            print("Simulación de un paso completada.")  # Mensaje de depuración
+                        if otro_ciudadano.get_estado() == 'S' and random.random() < self.__enfermedad.get_infeccion_probable():
+                            otro_ciudadano.infectar(self.get_enfermedad())
+        # Actualizar estados de todos los ciudadanos después de las interacciones
+        for ciudadano in self.__ciudadanos:
+            ciudadano.actualizar_estado()
+
 
     def resultados(self):
         estados = {'S': 0, 'I': 0, 'R': 0, 'M': 0}
