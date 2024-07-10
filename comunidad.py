@@ -2,6 +2,7 @@ import random
 import csv
 import numpy as np
 from ciudadano import Ciudadano
+
 #Gestiona la población de ciudadanos, las conexiones entre ellos, y la propagación y recuperación de la enfermedad 
 class Comunidad():
     def __init__(self, num_ciudadanos, promedio_conexion_fisica, enfermedad, num_infectados, probabilidad_conexion_fisica, ciudadanos,gamma):
@@ -10,10 +11,9 @@ class Comunidad():
         self.__enfermedad = enfermedad 
         self.__num_infectados = num_infectados 
         self.__probabilidad_conexion_fisica = probabilidad_conexion_fisica
-        self.__ciudadanos = ciudadanos 
+        self.__ciudadanos = []
         self.__gamma = gamma
-        self.__familias = {} 
-        self.familias = self.asignar_familias()
+        self.__familias = []
         
     #Set y get para cada atributo privado de la clase
     def get_num_ciudadanos(self):
@@ -49,8 +49,11 @@ class Comunidad():
     def get_ciudadanos(self):
         return self.__ciudadanos
 
-    def set_ciudadanos(self, ciudadanos):
-        self.__ciudadanos = ciudadanos
+    def set_ciudadanos(self, ciudadano):
+        self.__ciudadanos.append(ciudadano)
+
+    def set_familias(self, familia):
+        self.__familias.append(familia)
 
     def get_gamma(self):
         return self.__gamma
@@ -80,7 +83,7 @@ class Comunidad():
             nombre = nombres_aleatorios[i]
             apellido = apellidos_aleatorios[i]
             ciudadano = Ciudadano(id=i+1, nombre=nombre, apellido=apellido, comunidad=self, familia=None, enfermedad=None, estado='S', gamma=None)
-            ciudadanos.append(ciudadano)
+            self.set_ciudadanos(ciudadano)
 
         return ciudadanos
 
@@ -96,18 +99,21 @@ class Comunidad():
                 
             familia = np.random.choice(ciudadanos_sin_familia, tamaño_familia)
             for ciudadano in familia:
-                ciudadano.set_familia(i)  #Asignar un identificador de familia a cada ciudadano
-                ciudadanos_sin_familia.remove(ciudadano)
+                ciudadano.set_familia(i)  #Asigna un identificador de familia a cada ciudadano
+                #ciudadanos_sin_familia.remove(ciudadano)
                 
-            familias.append(familia)
+            self.set_familias(familia)
 
         return familias
     
-
-    def inicializar_infectados(self):  #numero inicial de ciudadanos infectados en la comunidad
-        infectados = random.sample(self.__ciudadanos, self.__num_infectados)
+    #numero inicial de ciudadanos infectados en la comunidad
+    def inicializar_infectados(self):
+        num_infectados = min(self.__num_infectados, len(self.__ciudadanos))
+        infectados = random.sample(self.__ciudadanos, num_infectados)
         for ciudadano in infectados:
-            ciudadano.infectar()
+            ciudadano.infectar(self.get_enfermedad())
+        print(f"{num_infectados} ciudadanos infectados inicialmente.")  # Mensaje de depuración
+
 
 
     def interaccion_aleatoria(self): #Simula interacciones aleatorias entre los ciudadanos basadas en la probabilidad de conexión física,
@@ -117,8 +123,8 @@ class Comunidad():
                 posibles_interactores = [otro for otro in self.__ciudadanos if otro != ciudadano]
                 interactor = np.random.choice(posibles_interactores)
                 if ciudadano.get_estado() == 'I' and interactor.get_estado() == 'S':
-                    if np.random.random() < ciudadano.get_enfermedad().get_infeccion_probable():
-                        interactor.infectar()
+                    if np.random.random() < self.get_enfermedad().get_infeccion_probable():
+                        interactor.infectar(self.get_enfermedad())
 
     def interaccion_familiar(self):   #interacciones dentro de las familias, donde los miembros 
                                       #pueden infectarse si un miembro infectado está presente
@@ -128,14 +134,21 @@ class Comunidad():
                     persona1 = familia[i]
                     persona2 = familia[j]
                     if persona1.get_estado() == 'I' and persona2.get_estado() == 'S':
-                        if np.random.random() < persona1.get_enfermedad().get_infeccion_probable():
-                            persona2.infectar()
+                        if np.random.random() < self.get_enfermedad().get_infeccion_probable():
+                            persona2.infectar(self.get_enfermedad())
     
     def simulacion_paso(self):
         self.interaccion_aleatoria()
         self.interaccion_familiar()
         for ciudadano in self.__ciudadanos:
             ciudadano.actualizar_estado()
+            for ciudadano in self.__ciudadanos:
+                if ciudadano.get_estado() == 'I':
+                    for otro_ciudadano in random.sample(self.__ciudadanos, self.__promedio_conexion_fisica):
+                        if otro_ciudadano.get_estado() == 'S':
+                            if random.random() < self.__enfermedad.get_infeccion_probable():
+                                otro_ciudadano.infectar(self.get_enfermedad())
+            print("Simulación de un paso completada.")  # Mensaje de depuración
 
     def resultados(self):
         estados = {'S': 0, 'I': 0, 'R': 0, 'M': 0}
@@ -149,5 +162,6 @@ class Comunidad():
 
 
 #Al inicio, un número inicial de ciudadanos se infectan 
-#En cada paso de la simulación, los ciudadanos se conectan aleatoriamente y se contagian basados en la probabilidad de infección.
+#En cada paso de la simulación, los ciudadanos se conectan aleatoriamente o entre familias y se contagian basados en la probabilidad de infección.
 #Los ciudadanos infectados pueden recuperarse o morir 
+
