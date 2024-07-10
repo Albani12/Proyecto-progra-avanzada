@@ -156,6 +156,7 @@ class Comunidad():
                         if np.random.random() < self.get_enfermedad().get_infeccion_probable():
                             persona2.infectar(self.get_enfermedad())
     
+    
     def simulacion_paso(self):
         self.interaccion_aleatoria()
         self.interaccion_familiar()

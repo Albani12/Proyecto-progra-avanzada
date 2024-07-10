@@ -80,7 +80,7 @@ class Ciudadano():  #Representa a cada individuo en la simulación
 
     def morir(self):
         if self.__estado == 'I':
-            self.__estado = 'M'  # Indicar estado de muerte
+            self.__estado = 'M'  #indica estado de muerte
 
     def paso(self):    #para seguir el progreso de la infeccion
         if self.__estado == 'I':
@@ -98,15 +98,11 @@ class Ciudadano():  #Representa a cada individuo en la simulación
                     self.recuperar()
                 elif np.random.normal() < self.get_enfermedad().get_probabilidad_muerte():
                     self.morir()
-            # else:
-            #     for otro in self.__familia:
-            #         if otro.get_estado() == 'S' and np.random.normal() < self.get_enfermedad().get_infeccion_probable():
-            #             otro.infectar(self.get_enfermedad())
     #sugerencia del profe: usar random de numpy
 
     def representacion(self):
         return f"{self.__nombre} {self.__apellido}: {self.__estado}"
     
-
+    
 
     

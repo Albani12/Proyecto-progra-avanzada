@@ -3,7 +3,6 @@ import random
 
 class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el tiempo promedio de recuperación
     def __init__(self, infeccion_probable, promedio_pasos, probabilidad_muerte, probabilidad_recuperacion, enfermo=False):
-
         self.__infeccion_probable = infeccion_probable
         self.__promedio_pasos = promedio_pasos
         self.__enfermo = enfermo
@@ -53,7 +52,7 @@ class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el
     def infectar_familia(self, familia): #Para los contactos estrechos
         #Infecta una familia completa con la probabilidad de infección de la enfermedad
         for ciudadano in familia:
-            if np.random.random() < self.__infeccion_probable:
+            if np.random.normal() < self.__infeccion_probable:
                 ciudadano.infectar(self.get_enfermedad())
 
     def contagiar(self, ciudadanos): #Para los contactos aleatorios
@@ -61,7 +60,7 @@ class Enfermedad(): #Define la enfermedad con la probabilidad de infección y el
         for ciudadano in ciudadanos:
             if ciudadano.get_estado() == 'I':
                 for otro in ciudadanos:
-                    if ciudadano != otro and np.random.random() < self.__infeccion_probable:
+                    if ciudadano != otro and np.random.normal() < self.__infeccion_probable:
                         otro.infectar(self.get_enfermedad())
 
     def probabilidad_infeccion(self):

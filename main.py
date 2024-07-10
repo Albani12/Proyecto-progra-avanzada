@@ -36,7 +36,7 @@ class VentanaGtk(Gtk.ApplicationWindow):
         self.textview.set_cursor_visible(False)
         vbox.append(self.textview)
 
-        self.infectados_label = Gtk.Label(label="Total de Infectados: 0")
+        self.infectados_label = Gtk.Label(label="Total de Infectados:")
         vbox.append(self.infectados_label)
 
         self.about_btn = Gtk.Button(label="Acerca de")
@@ -44,7 +44,6 @@ class VentanaGtk(Gtk.ApplicationWindow):
         vbox.append(self.about_btn)
 
         self.iniciar_simulacion()  #Inicializar la simulacion
-
         
     def show_about_dialog(self, action):
         about = Gtk.AboutDialog()
@@ -59,10 +58,9 @@ class VentanaGtk(Gtk.ApplicationWindow):
 
 
     # Inicializar comunidad y simulador
-
     def iniciar_simulacion(self):
         num_ciudadanos = 1000
-        promedio_conexion_fisica = 0.5
+        promedio_conexion_fisica = 5
         covid = Enfermedad(infeccion_probable=0.3, promedio_pasos=15, probabilidad_recuperacion=0.1, probabilidad_muerte=0.05)
         num_infectados = 10
         probabilidad_conexion_fisica = 0.5
@@ -70,6 +68,7 @@ class VentanaGtk(Gtk.ApplicationWindow):
         talca = Comunidad(num_ciudadanos, promedio_conexion_fisica, covid, num_infectados, probabilidad_conexion_fisica, [], 0.5)
         talca.crear_ciudadanos()  # Crear ciudadanos y asignar a la comunidad
         talca.asignar_familias()  # Asignar familias
+        talca.asignar_subcomunidades(promedio_personas_por_grupo=8)
         talca.inicializar_infectados()  # Inicializar infectados
         self.simulador = Simulador(talca, [])
         print("Simulación inicializada.")  # Mensaje de depuracion
@@ -111,4 +110,3 @@ def main(args):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
-
