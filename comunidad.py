@@ -112,17 +112,24 @@ class Comunidad():
 
         return familias
     
-    def asignar_subcomunidades(self, promedio_personas_por_grupo):
+    def asignar_subcomunidades(self, promedio_personas_por_grupo): #dividir la comunidad de los 1000 ciudadanos en subcomunidades
         ciudadanos = self.__ciudadanos
         num_ciudadanos = len(ciudadanos)
+        promedio_personas_por_grupo = 8
+        #Calcular el número de grupos necesarios para obtener un promedio de 8 personas por grupo
         num_grupos = num_ciudadanos // promedio_personas_por_grupo
         subcomunidades = [[] for _ in range(num_grupos)]
 
+        # Mezclar la lista de personas para distribuirlas aleatoriamente
         random.shuffle(ciudadanos)
 
+        #Asignar personas a los grupos
         for i, ciudadano in enumerate(ciudadanos):
             grupo_index = i % num_grupos
             subcomunidades[grupo_index].append(ciudadano)
+            # Imprimir los grupos
+        #for i, grupo in enumerate(subcomunidades):
+         #   print(f"Grupo {i + 1}: {grupo}")
 
         self.__subcomunidades = subcomunidades
 

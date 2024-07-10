@@ -50,7 +50,7 @@ class Simulador:
                 'nombre': ciudadano.get_nombre(),
                 'apellido': ciudadano.get_apellido(),
                 'estado': ciudadano.get_estado(),
-                'contador': 0  # Valor por defecto si el ciudadano no tiene enfermedad asignada
+                'contador': 0  #Valor por defecto si el ciudadano no tiene enfermedad asignada
             }
             enfermedad = ciudadano.get_enfermedad()
         if enfermedad is not None:
